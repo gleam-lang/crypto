@@ -1,4 +1,4 @@
-{application, crypto,
+{application, gleam_crypto,
  [{description, "A Gleam program"},
   {vsn, "1.0.0"},
   {registered, []},
@@ -6,6 +6,7 @@
    [kernel,
     stdlib,
     gleam_stdlib,
+    ssl,
     crypto
    ]},
   {env,[]},

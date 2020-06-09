@@ -5,7 +5,8 @@
   {applications,
    [kernel,
     stdlib,
-    gleam_stdlib
+    gleam_stdlib,
+    crypto
    ]},
   {env,[]},
   {modules, []},

@@ -1,5 +1,29 @@
+//// Set of cryptographic functions.
+
 import gleam/bit_string.{BitString}
 import gleam/bitwise
+
+/// Generates N bytes randomly uniform 0..255, and returns the result in a binary.
+///
+/// Uses a cryptographically secure prng seeded and periodically mixed with operating system provided entropy.
+/// By default this is the RAND_bytes method from OpenSSL.
+///
+/// https://erlang.org/doc/man/crypto.html#strong_rand_bytes-1
+pub external fn strong_random_bytes(Int) -> BitString =
+  "crypto" "strong_rand_bytes"
+
+pub type HashAlgorithm {
+  Sha224
+  Sha256
+  Sha384
+  Sha512
+}
+
+// Just take BitString while Iodata has semantics of Strings
+//
+/// Computes a digest of the input binary.
+pub external fn hash(HashAlgorithm, BitString) -> BitString =
+  "crypto" "hash"
 
 fn do_secure_compare(left, right, accumulator) {
   case left, right {

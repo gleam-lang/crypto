@@ -2,6 +2,14 @@ import gleam/bit_string
 import gleam/crypto
 import gleam/should
 
+pub fn random_bytes_test() {
+  crypto.strong_random_bytes(0)
+  |> should.equal(bit_string.from_string(""))
+  crypto.strong_random_bytes(10)
+  |> bit_string.byte_size()
+  |> should.equal(10)
+}
+
 pub fn secure_compare_test() {
   crypto.secure_compare(
     bit_string.from_string("ab"),

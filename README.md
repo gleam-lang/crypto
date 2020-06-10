@@ -2,7 +2,13 @@
 
 A Gleam library for the Beam cryptography functions.
 
-## Quick start
+## Usage
+
+```rust
+import gleam/crypto
+```
+
+## Contributing
 
 ```sh
 # Build the project

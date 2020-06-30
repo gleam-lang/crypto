@@ -1,10 +1,8 @@
 {"1.1.0",
 [{<<"gleam_bitwise">>,{pkg,<<"gleam_bitwise">>,<<"1.0.1">>},0},
- {<<"gleam_stdlib">>,
-  {git,"https://github.com/gleam-lang/stdlib",
-       {ref,"0925fba65fe2b3eeb03e88933130d7adf39d8b83"}},
-  0}]}.
+ {<<"gleam_stdlib">>,{pkg,<<"gleam_stdlib">>,<<"0.10.0">>},0}]}.
 [
 {pkg_hash,[
- {<<"gleam_bitwise">>, <<"03C418001F862543681365AF31BA3358BB6E56DCDE9250042C2F825F36532E9D">>}]}
+ {<<"gleam_bitwise">>, <<"03C418001F862543681365AF31BA3358BB6E56DCDE9250042C2F825F36532E9D">>},
+ {<<"gleam_stdlib">>, <<"99DDF11B1458F7CA0D58A806B643CB1890C0B42CD283E51FAA6CF168C2496C9E">>}]}
 ].

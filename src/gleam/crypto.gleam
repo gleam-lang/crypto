@@ -25,6 +25,17 @@ pub type HashAlgorithm {
 pub external fn hash(HashAlgorithm, BitString) -> BitString =
   "crypto" "hash"
 
+type Hmac {
+  Hmac
+}
+
+external fn erl_hmac(Hmac, HashAlgorithm, BitString, BitString) -> BitString =
+  "crypto" "mac"
+
+pub fn hmac(data: BitString, algorithm: HashAlgorithm, key: BitString) {
+  erl_hmac(Hmac, algorithm, key, data)
+}
+
 fn do_secure_compare(left, right, accumulator) {
   case left, right {
     [x, ..left], [y, ..right] -> {

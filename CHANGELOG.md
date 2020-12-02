@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## v0.2.0 - 2020-12-02
 
 - Added `hmac` function.
 

@@ -1,6 +1,6 @@
 {application, gleam_crypto,
  [{description, "Gleam bindings to the BEAM cryptography functions"},
-  {vsn, "0.1.1"},
+  {vsn, "0.2.0"},
   {registered, []},
   {applications,
    [kernel,

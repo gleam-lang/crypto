@@ -3,6 +3,7 @@
 ## v0.2.0 - Unreleased
 
 - Converted to use the Gleam build tool.
+- The `sign_message` and `verify_signed_message` functions have been added.
 
 ## v0.2.0 - 2020-12-02
 

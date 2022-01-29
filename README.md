@@ -1,18 +1,13 @@
 # crypto
 
 <a href="https://github.com/gleam-experiments/crypto/releases"><img src="https://img.shields.io/github/release/gleam-experiments/crypto" alt="GitHub release"></a>
-<a href="https://webchat.freenode.net/#gleam-lang"><img src="https://img.shields.io/badge/freenode%20chat-%23gleam--lang-blue" alt="IRC: #gleam-lang on chat.freenode.net"></a>
+<a href="https://discord.gg/Fm8Pwmy"><img src="https://img.shields.io/discord/768594524158427167?color=blue" alt="Discord chat"></a>
 ![CI](https://github.com/gleam-experiments/crypto/workflows/test/badge.svg?branch=main)
 
 Gleam bindings to the BEAM cryptography functions.
 
 ## Installation
 
-This package can be installed by adding `gleam_crypto` to your `rebar.config`
-dependencies:
-
-```erlang
-{deps, [
-    gleam_crypto
-]}.
+```
+gleam add gleam_crypto
 ```

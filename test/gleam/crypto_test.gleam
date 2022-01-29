@@ -1,13 +1,8 @@
-import gleam/atom.{Atom}
 import gleam/bit_string
 import gleam/crypto
-import gleam/should
-
-external fn ensure_all_started(Atom) -> Result(List(Atom), Nil) =
-  "application" "ensure_all_started"
+import gleeunit/should
 
 pub fn random_bytes_test() {
-  let Ok(_) = ensure_all_started(atom.create_from_string("crypto"))
   crypto.strong_random_bytes(0)
   |> should.equal(bit_string.from_string(""))
   crypto.strong_random_bytes(10)

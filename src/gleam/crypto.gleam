@@ -1,6 +1,6 @@
 //// Set of cryptographic functions.
 
-import gleam/bit_string.{BitString}
+import gleam/bit_string
 import gleam/bitwise
 
 /// Generates N bytes randomly uniform 0..255, and returns the result in a binary.

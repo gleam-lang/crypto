@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.0 - Unreleased
+
+- Converted to use the Gleam build tool.
+
 ## v0.2.0 - 2020-12-02
 
 - Added `hmac` function.

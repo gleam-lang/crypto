@@ -2,6 +2,8 @@
 
 import gleam/bit_string
 import gleam/bitwise
+import gleam/string
+import gleam/base
 
 /// Generates N bytes randomly uniform 0..255, and returns the result in a binary.
 ///
@@ -63,5 +65,68 @@ pub fn secure_compare(left: BitString, right: BitString) -> Bool {
   case bit_string.byte_size(left) == bit_string.byte_size(right) {
     True -> do_secure_compare(left, right, 0)
     False -> False
+  }
+}
+
+// Based off of https://github.com/elixir-plug/plug_crypto/blob/v1.2.1/lib/plug/crypto/message_verifier.ex#L1
+//
+/// Sign a message which can later be verified using the `verify_signed_message`
+/// function to detect if the message has been tampered with.
+///
+/// A web application could use this verifier to sign HTTP cookies. The data can
+/// be read by the user, but cannot be tampered with.
+///
+pub fn sign_message(
+  message: BitString,
+  secret: BitString,
+  digest_type: HashAlgorithm,
+) -> String {
+  let input = signing_input(digest_type, message)
+  let signature = hmac(<<input:utf8>>, digest_type, secret)
+
+  string.concat([input, ".", base.url_encode64(signature, False)])
+}
+
+fn signing_input(digest_type: HashAlgorithm, message: BitString) -> String {
+  let protected = case digest_type {
+    Sha224 -> "HS224"
+    Sha256 -> "HS256"
+    Sha384 -> "HS384"
+    Sha512 -> "HS512"
+  }
+  string.concat([
+    base.url_encode64(<<protected:utf8>>, False),
+    ".",
+    base.url_encode64(message, False),
+  ])
+}
+
+// Based off of https://github.com/elixir-plug/plug_crypto/blob/v1.2.1/lib/plug/crypto/message_verifier.ex#L1
+//
+/// Verify a message created by the `sign_message` function.
+///
+pub fn verify_signed_message(
+  message: String,
+  secret: BitString,
+) -> Result(BitString, Nil) {
+  try #(protected, payload, signature) = case string.split(message, on: ".") {
+    [a, b, c] -> Ok(#(a, b, c))
+    _ -> Error(Nil)
+  }
+  let text = string.concat([protected, ".", payload])
+  try payload = base.url_decode64(payload)
+  try signature = base.url_decode64(signature)
+  try protected = base.url_decode64(protected)
+  try digest_type = case protected {
+    <<"HS224":utf8>> -> Ok(Sha224)
+    <<"HS256":utf8>> -> Ok(Sha256)
+    <<"HS384":utf8>> -> Ok(Sha384)
+    <<"HS512":utf8>> -> Ok(Sha512)
+    _ -> Error(Nil)
+  }
+  let challenge = hmac(<<text:utf8>>, digest_type, secret)
+  case secure_compare(challenge, signature) {
+    True -> Ok(payload)
+    False -> Error(Nil)
   }
 }

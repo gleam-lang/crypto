@@ -4,6 +4,7 @@ import gleam/bit_string
 import gleam/bitwise
 import gleam/string
 import gleam/base
+import gleam/result
 
 /// Generates N bytes randomly uniform 0..255, and returns the result in a binary.
 ///
@@ -109,21 +110,23 @@ pub fn verify_signed_message(
   message: String,
   secret: BitString,
 ) -> Result(BitString, Nil) {
-  try #(protected, payload, signature) = case string.split(message, on: ".") {
+  use #(protected, payload, signature) <- result.then(case
+    string.split(message, on: ".")
+  {
     [a, b, c] -> Ok(#(a, b, c))
     _ -> Error(Nil)
-  }
+  })
   let text = string.concat([protected, ".", payload])
-  try payload = base.url_decode64(payload)
-  try signature = base.url_decode64(signature)
-  try protected = base.url_decode64(protected)
-  try digest_type = case protected {
+  use payload <- result.then(base.url_decode64(payload))
+  use signature <- result.then(base.url_decode64(signature))
+  use protected <- result.then(base.url_decode64(protected))
+  use digest_type <- result.then(case protected {
     <<"HS224":utf8>> -> Ok(Sha224)
     <<"HS256":utf8>> -> Ok(Sha256)
     <<"HS384":utf8>> -> Ok(Sha384)
     <<"HS512":utf8>> -> Ok(Sha512)
     _ -> Error(Nil)
-  }
+  })
   let challenge = hmac(<<text:utf8>>, digest_type, secret)
   case secure_compare(challenge, signature) {
     True -> Ok(payload)

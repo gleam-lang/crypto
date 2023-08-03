@@ -13,8 +13,8 @@ import gleam/result
 /// By default this is the RAND_bytes method from OpenSSL.
 ///
 /// https://erlang.org/doc/man/crypto.html#strong_rand_bytes-1
-pub external fn strong_random_bytes(Int) -> BitString =
-  "crypto" "strong_rand_bytes"
+@external(erlang, "crypto", "strong_rand_bytes")
+pub fn strong_random_bytes(a: Int) -> BitString
 
 pub type HashAlgorithm {
   Sha224
@@ -24,15 +24,15 @@ pub type HashAlgorithm {
 }
 
 /// Computes a digest of the input bit string.
-pub external fn hash(HashAlgorithm, BitString) -> BitString =
-  "crypto" "hash"
+@external(erlang, "crypto", "hash")
+pub fn hash(a: HashAlgorithm, b: BitString) -> BitString
 
 type Hmac {
   Hmac
 }
 
-external fn erl_hmac(Hmac, HashAlgorithm, BitString, BitString) -> BitString =
-  "crypto" "mac"
+@external(erlang, "crypto", "mac")
+fn erl_hmac(a: Hmac, b: HashAlgorithm, c: BitString, d: BitString) -> BitString
 
 /// Calculates the HMAC (hash-based message authentication code) for a bit
 /// string.

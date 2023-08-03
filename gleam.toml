@@ -1,5 +1,7 @@
 name = "gleam_crypto"
 version = "0.3.1"
+gleam = ">= 0.30.0"
+
 licences = ["Apache-2.0"]
 description = "Gleam bindings to the BEAM cryptography functions"
 

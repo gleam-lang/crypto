@@ -14,7 +14,7 @@ import gleam/result
 ///
 /// https://erlang.org/doc/man/crypto.html#strong_rand_bytes-1
 @external(erlang, "crypto", "strong_rand_bytes")
-pub fn strong_random_bytes(a: Int) -> BitString
+pub fn strong_random_bytes(a: Int) -> BitArray
 
 pub type HashAlgorithm {
   Sha224
@@ -25,14 +25,14 @@ pub type HashAlgorithm {
 
 /// Computes a digest of the input bit string.
 @external(erlang, "crypto", "hash")
-pub fn hash(a: HashAlgorithm, b: BitString) -> BitString
+pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray
 
 type Hmac {
   Hmac
 }
 
 @external(erlang, "crypto", "mac")
-fn erl_hmac(a: Hmac, b: HashAlgorithm, c: BitString, d: BitString) -> BitString
+fn erl_hmac(a: Hmac, b: HashAlgorithm, c: BitArray, d: BitArray) -> BitArray
 
 /// Calculates the HMAC (hash-based message authentication code) for a bit
 /// string.
@@ -40,17 +40,13 @@ fn erl_hmac(a: Hmac, b: HashAlgorithm, c: BitString, d: BitString) -> BitString
 /// Based on the Erlang [`crypto:mac`](https://www.erlang.org/doc/man/crypto.html#mac-4)
 /// function.
 ///
-pub fn hmac(data: BitString, algorithm: HashAlgorithm, key: BitString) {
+pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) {
   erl_hmac(Hmac, algorithm, key, data)
 }
 
-fn do_secure_compare(
-  left: BitString,
-  right: BitString,
-  accumulator: Int,
-) -> Bool {
+fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool {
   case left, right {
-    <<x, left:bit_string>>, <<y, right:bit_string>> -> {
+    <<x, left:bits>>, <<y, right:bits>> -> {
       let accumulator = bitwise.or(accumulator, bitwise.exclusive_or(x, y))
       do_secure_compare(left, right, accumulator)
     }
@@ -62,7 +58,7 @@ fn do_secure_compare(
 ///
 /// For more details see: http://codahale.com/a-lesson-in-timing-attacks/
 ///
-pub fn secure_compare(left: BitString, right: BitString) -> Bool {
+pub fn secure_compare(left: BitArray, right: BitArray) -> Bool {
   case bit_string.byte_size(left) == bit_string.byte_size(right) {
     True -> do_secure_compare(left, right, 0)
     False -> False
@@ -78,8 +74,8 @@ pub fn secure_compare(left: BitString, right: BitString) -> Bool {
 /// be read by the user, but cannot be tampered with.
 ///
 pub fn sign_message(
-  message: BitString,
-  secret: BitString,
+  message: BitArray,
+  secret: BitArray,
   digest_type: HashAlgorithm,
 ) -> String {
   let input = signing_input(digest_type, message)
@@ -88,7 +84,7 @@ pub fn sign_message(
   string.concat([input, ".", base.url_encode64(signature, False)])
 }
 
-fn signing_input(digest_type: HashAlgorithm, message: BitString) -> String {
+fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
   let protected = case digest_type {
     Sha224 -> "HS224"
     Sha256 -> "HS256"
@@ -108,8 +104,8 @@ fn signing_input(digest_type: HashAlgorithm, message: BitString) -> String {
 ///
 pub fn verify_signed_message(
   message: String,
-  secret: BitString,
-) -> Result(BitString, Nil) {
+  secret: BitArray,
+) -> Result(BitArray, Nil) {
   use #(protected, payload, signature) <- result.then(case
     string.split(message, on: ".")
   {

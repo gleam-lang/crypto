@@ -1,9 +1,8 @@
 //// Set of cryptographic functions.
 
-import gleam/bit_string
-import gleam/bitwise
+import gleam/bit_array
 import gleam/string
-import gleam/base
+import gleam/int
 import gleam/result
 
 /// Generates N bytes randomly uniform 0..255, and returns the result in a binary.
@@ -47,7 +46,8 @@ pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) {
 fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool {
   case left, right {
     <<x, left:bits>>, <<y, right:bits>> -> {
-      let accumulator = bitwise.or(accumulator, bitwise.exclusive_or(x, y))
+      let accumulator =
+        int.bitwise_or(accumulator, int.bitwise_exclusive_or(x, y))
       do_secure_compare(left, right, accumulator)
     }
     <<>>, <<>> -> accumulator == 0
@@ -59,7 +59,7 @@ fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool 
 /// For more details see: http://codahale.com/a-lesson-in-timing-attacks/
 ///
 pub fn secure_compare(left: BitArray, right: BitArray) -> Bool {
-  case bit_string.byte_size(left) == bit_string.byte_size(right) {
+  case bit_array.byte_size(left) == bit_array.byte_size(right) {
     True -> do_secure_compare(left, right, 0)
     False -> False
   }
@@ -81,7 +81,7 @@ pub fn sign_message(
   let input = signing_input(digest_type, message)
   let signature = hmac(<<input:utf8>>, digest_type, secret)
 
-  string.concat([input, ".", base.url_encode64(signature, False)])
+  string.concat([input, ".", bit_array.base64_url_encode(signature, False)])
 }
 
 fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
@@ -92,9 +92,9 @@ fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
     Sha512 -> "HS512"
   }
   string.concat([
-    base.url_encode64(<<protected:utf8>>, False),
+    bit_array.base64_url_encode(<<protected:utf8>>, False),
     ".",
-    base.url_encode64(message, False),
+    bit_array.base64_url_encode(message, False),
   ])
 }
 
@@ -113,9 +113,9 @@ pub fn verify_signed_message(
     _ -> Error(Nil)
   })
   let text = string.concat([protected, ".", payload])
-  use payload <- result.then(base.url_decode64(payload))
-  use signature <- result.then(base.url_decode64(signature))
-  use protected <- result.then(base.url_decode64(protected))
+  use payload <- result.then(bit_array.base64_url_decode(payload))
+  use signature <- result.then(bit_array.base64_url_decode(signature))
+  use protected <- result.then(bit_array.base64_url_decode(protected))
   use digest_type <- result.then(case protected {
     <<"HS224":utf8>> -> Ok(Sha224)
     <<"HS256":utf8>> -> Ok(Sha256)

@@ -1,12 +1,12 @@
-import gleam/bit_string
+import gleam/bit_array
 import gleam/crypto
 import gleeunit/should
 
 pub fn random_bytes_test() {
   crypto.strong_random_bytes(0)
-  |> should.equal(bit_string.from_string(""))
+  |> should.equal(bit_array.from_string(""))
   crypto.strong_random_bytes(10)
-  |> bit_string.byte_size()
+  |> bit_array.byte_size()
   |> should.equal(10)
 }
 
@@ -21,30 +21,27 @@ pub fn run_hmac_test() {
 
 pub fn secure_compare1_test() {
   crypto.secure_compare(
-    bit_string.from_string("ab"),
-    bit_string.from_string("ab"),
+    bit_array.from_string("ab"),
+    bit_array.from_string("ab"),
   )
   |> should.equal(True)
 }
 
 pub fn secure_compare2_test() {
   crypto.secure_compare(
-    bit_string.from_string("ab"),
-    bit_string.from_string("az"),
+    bit_array.from_string("ab"),
+    bit_array.from_string("az"),
   )
   |> should.equal(False)
 }
 
 pub fn secure_compare3_test() {
-  crypto.secure_compare(bit_string.from_string(""), bit_string.from_string(""))
+  crypto.secure_compare(bit_array.from_string(""), bit_array.from_string(""))
   |> should.equal(True)
 }
 
 pub fn secure_compare4_test() {
-  crypto.secure_compare(
-    bit_string.from_string("ab"),
-    bit_string.from_string("a"),
-  )
+  crypto.secure_compare(bit_array.from_string("ab"), bit_array.from_string("a"))
   |> should.equal(False)
 }
 

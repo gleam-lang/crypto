@@ -1,5 +1,5 @@
 name = "gleam_crypto"
-version = "0.5.1"
+version = "1.0.0"
 gleam = ">= 0.32.0"
 
 licences = ["Apache-2.0"]

@@ -50,7 +50,7 @@ fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool 
         int.bitwise_or(accumulator, int.bitwise_exclusive_or(x, y))
       do_secure_compare(left, right, accumulator)
     }
-    <<>>, <<>> -> accumulator == 0
+    _, _ -> accumulator == 0
   }
 }
 

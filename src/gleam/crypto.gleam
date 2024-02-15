@@ -24,6 +24,10 @@ pub type HashAlgorithm {
   Sha256
   Sha384
   Sha512
+  /// The MD5 hash algorithm is considered weak and should not be used for
+  /// security purposes. It may still be useful for non-security purposes or for
+  /// compatibility with existing systems.
+  Md5
 }
 
 /// Computes a digest of the input bit string.
@@ -89,6 +93,7 @@ fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
     Sha256 -> "HS256"
     Sha384 -> "HS384"
     Sha512 -> "HS512"
+    Md5 -> "Md5"
   }
   string.concat([
     bit_array.base64_url_encode(<<protected:utf8>>, False),

@@ -45,6 +45,13 @@ pub fn hash_sha512_test() {
   >>)
 }
 
+pub fn hash_md5_test() {
+  crypto.hash(crypto.Md5, <<"hi":utf8>>)
+  |> should.equal(<<
+    73, 246, 138, 92, 132, 147, 236, 44, 11, 244, 137, 130, 28, 33, 252, 59,
+  >>)
+}
+
 pub fn hmac_sha256_test() {
   <<"Aladin":utf8>>
   |> crypto.hmac(crypto.Sha256, <<"secret":utf8>>)
@@ -81,6 +88,14 @@ pub fn hmac_sha512_test() {
     160, 60, 66, 220, 202, 26, 48, 237, 14, 53, 239, 74, 128, 194, 103, 182, 14,
     122, 31, 46, 26, 94, 1, 82, 22, 206, 122, 94, 1, 219, 240, 237, 41, 83, 39,
     149, 237, 179, 39, 132, 160, 170, 5, 160, 231, 143, 105,
+  >>)
+}
+
+pub fn hmac_md5_test() {
+  <<"Aladin":utf8>>
+  |> crypto.hmac(crypto.Md5, <<"secret":utf8>>)
+  |> should.equal(<<
+    252, 36, 147, 158, 191, 93, 158, 10, 120, 217, 237, 157, 107, 233, 188, 139,
   >>)
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0 - 2024-02-15
+
+- Added the MD5 hash algorithm. This algorithm is broken and  not recommended
+  for security purposes, but may be useful for interoperability with systems
+  that use MD5.
+
 ## v1.1.0 - 2024-02-15
 
 - This library now supports the JavaScript target too.

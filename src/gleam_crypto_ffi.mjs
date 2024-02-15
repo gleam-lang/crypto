@@ -1,5 +1,5 @@
 import { BitArray } from "./gleam.mjs";
-import { Sha224, Sha256, Sha384, Sha512 } from "./gleam/crypto.mjs";
+import { Sha224, Sha256, Sha384, Sha512, Md5 } from "./gleam/crypto.mjs";
 import * as crypto from "node:crypto";
 
 function webCrypto() {
@@ -18,6 +18,8 @@ function algorithmName(algorithm) {
     return "sha384";
   } else if (algorithm instanceof Sha512) {
     return "sha512";
+  } else if (algorithm instanceof Md5) {
+    return "md5";
   } else {
     throw new Error("Unsupported algorithm");
   }

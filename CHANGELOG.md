@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0 - 2024-02-15
+
+- This library now supports the JavaScript target too.
+
 ## v1.0.0 - 2024-01-15
 
 - Updated for Gleam v0.33.0.

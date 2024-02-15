@@ -5,14 +5,18 @@ import gleam/string
 import gleam/int
 import gleam/result
 
-/// Generates N bytes randomly uniform 0..255, and returns the result in a binary.
+/// Generates a specified number of bytes randomly uniform 0..255, and returns
+/// the result in a binary.
 ///
-/// Uses a cryptographically secure prng seeded and periodically mixed with
-/// operating system provided entropy.
-/// By default this is the RAND_bytes method from OpenSSL.
+/// On Erlang this uses a cryptographically secure prng seeded and periodically
+/// mixed with / operating system provided entropy. By default this is the
+/// RAND_bytes method from OpenSSL.
+/// <https://erlang.org/doc/man/crypto.html#strong_rand_bytes-1>
 ///
-/// https://erlang.org/doc/man/crypto.html#strong_rand_bytes-1
+/// On JavaScript the WebCrypto API is used.
+///
 @external(erlang, "crypto", "strong_rand_bytes")
+@external(javascript, "../gleam_crypto_ffi.mjs", "strongRandomBytes")
 pub fn strong_random_bytes(a: Int) -> BitArray
 
 pub type HashAlgorithm {
@@ -24,35 +28,19 @@ pub type HashAlgorithm {
 
 /// Computes a digest of the input bit string.
 @external(erlang, "crypto", "hash")
+@external(javascript, "../gleam_crypto_ffi.mjs", "hash")
 pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray
-
-type Hmac {
-  Hmac
-}
-
-@external(erlang, "crypto", "mac")
-fn erl_hmac(a: Hmac, b: HashAlgorithm, c: BitArray, d: BitArray) -> BitArray
 
 /// Calculates the HMAC (hash-based message authentication code) for a bit
 /// string.
 ///
 /// Based on the Erlang [`crypto:mac`](https://www.erlang.org/doc/man/crypto.html#mac-4)
-/// function.
+/// function, or the [`node:crypto.createHmac`](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)
+/// function on JavaScript.
 ///
-pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) {
-  erl_hmac(Hmac, algorithm, key, data)
-}
-
-fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool {
-  case left, right {
-    <<x, left:bits>>, <<y, right:bits>> -> {
-      let accumulator =
-        int.bitwise_or(accumulator, int.bitwise_exclusive_or(x, y))
-      do_secure_compare(left, right, accumulator)
-    }
-    _, _ -> accumulator == 0
-  }
-}
+@external(erlang, "gleam_crypto_ffi", "hmac")
+@external(javascript, "../gleam_crypto_ffi.mjs", "hmac")
+pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) -> BitArray
 
 /// Compares the two binaries in constant-time to avoid timing attacks.
 ///
@@ -62,6 +50,17 @@ pub fn secure_compare(left: BitArray, right: BitArray) -> Bool {
   case bit_array.byte_size(left) == bit_array.byte_size(right) {
     True -> do_secure_compare(left, right, 0)
     False -> False
+  }
+}
+
+fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool {
+  case left, right {
+    <<x, left:bytes>>, <<y, right:bytes>> -> {
+      let accumulator =
+        int.bitwise_or(accumulator, int.bitwise_exclusive_or(x, y))
+      do_secure_compare(left, right, accumulator)
+    }
+    _, _ -> left == right && accumulator == 0
   }
 }
 
@@ -117,10 +116,14 @@ pub fn verify_signed_message(
   use signature <- result.then(bit_array.base64_url_decode(signature))
   use protected <- result.then(bit_array.base64_url_decode(protected))
   use digest_type <- result.then(case protected {
-    <<"HS224":utf8>> -> Ok(Sha224)
-    <<"HS256":utf8>> -> Ok(Sha256)
-    <<"HS384":utf8>> -> Ok(Sha384)
-    <<"HS512":utf8>> -> Ok(Sha512)
+    // <<"HS224":utf8>>
+    <<72, 83, 50, 50, 52>> -> Ok(Sha224)
+    // <<"HS256":utf8>>
+    <<72, 83, 50, 53, 54>> -> Ok(Sha256)
+    // <<"HS384":utf8>>
+    <<72, 83, 51, 56, 52>> -> Ok(Sha384)
+    // <<"HS512":utf8>> 
+    <<72, 83, 53, 49, 50>> -> Ok(Sha512)
     _ -> Error(Nil)
   })
   let challenge = hmac(<<text:utf8>>, digest_type, secret)

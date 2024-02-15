@@ -10,6 +10,14 @@ pub fn random_bytes_test() {
   |> should.equal(10)
 }
 
+pub fn hash_sha1_test() {
+  crypto.hash(crypto.Sha1, <<"hi":utf8>>)
+  |> should.equal(<<
+    194, 43, 95, 145, 120, 52, 38, 9, 66, 141, 111, 81, 178, 197, 175, 76, 11,
+    222, 106, 66,
+  >>)
+}
+
 pub fn hash_sha256_test() {
   crypto.hash(crypto.Sha256, <<"hi":utf8>>)
   |> should.equal(<<
@@ -125,7 +133,7 @@ pub fn secure_compare4_test() {
   |> should.equal(False)
 }
 
-pub fn sign_message_256_test() {
+pub fn sign_message_sha256_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha256)
   |> should.equal(
     "SFMyNTY.SGVsbG8h.Ru79YHRxErNruL-fFbL-D1rQX3evRazH8jDlvEUf4TQ",
@@ -137,7 +145,7 @@ pub fn sign_message_256_test() {
   )
 }
 
-pub fn sign_message_224_test() {
+pub fn sign_message_sha224_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha224)
   |> should.equal("SFMyMjQ.SGVsbG8h.Amvf2Hkzu-tgkpKeo9WUBvYiG49VJ_QJB5dAmA")
 
@@ -145,7 +153,7 @@ pub fn sign_message_224_test() {
   |> should.equal("SFMyMjQ.SGVsbG8h.NvgZO3AK1MfKlJ4HQnpBRyqZ-rjaolsjc9yAKg")
 }
 
-pub fn sign_message_384_test() {
+pub fn sign_message_sha384_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha384)
   |> should.equal(
     "SFMzODQ.SGVsbG8h.r70Xn1OA-6xg7KGyjAHeFIlhE9_a3ybY9Nuh_YWRQRUhiy78LdN6DVfNUKT1fqBO",
@@ -157,7 +165,7 @@ pub fn sign_message_384_test() {
   )
 }
 
-pub fn sign_message_512_test() {
+pub fn sign_message_sha512_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha512)
   |> should.equal(
     "SFM1MTI.SGVsbG8h.wzfL_dcJCCgIO3fBd5y4Hz00sNIjVGqJzHfHlOy3_eAvc9oEYAbYQKwCYIyQ7CsHdC5Z1G33XNMd8b-2THtOkQ",
@@ -169,50 +177,62 @@ pub fn sign_message_512_test() {
   )
 }
 
-pub fn verify_signed_message_256_ok_test() {
+pub fn verify_signed_message_sha256_ok_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha256)
   |> crypto.verify_signed_message(<<"secret":utf8>>)
   |> should.equal(Ok(<<"Hello!":utf8>>))
 }
 
-pub fn verify_signed_message_256_ko_test() {
+pub fn verify_signed_message_sha256_ko_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha256)
   |> crypto.verify_signed_message(<<"other":utf8>>)
   |> should.equal(Error(Nil))
 }
 
-pub fn verify_signed_message_224_ok_test() {
+pub fn verify_signed_message_sha224_ok_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha224)
   |> crypto.verify_signed_message(<<"secret":utf8>>)
   |> should.equal(Ok(<<"Hello!":utf8>>))
 }
 
-pub fn verify_signed_message_224_ko_test() {
+pub fn verify_signed_message_sha224_ko_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha224)
   |> crypto.verify_signed_message(<<"other":utf8>>)
   |> should.equal(Error(Nil))
 }
 
-pub fn verify_signed_message_384_ok_test() {
+pub fn verify_signed_message_sha384_ok_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha384)
   |> crypto.verify_signed_message(<<"secret":utf8>>)
   |> should.equal(Ok(<<"Hello!":utf8>>))
 }
 
-pub fn verify_signed_message_384_ko_test() {
+pub fn verify_signed_message_sha384_ko_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha384)
   |> crypto.verify_signed_message(<<"other":utf8>>)
   |> should.equal(Error(Nil))
 }
 
-pub fn verify_signed_message_512_ok_test() {
+pub fn verify_signed_message_sha512_ok_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha512)
   |> crypto.verify_signed_message(<<"secret":utf8>>)
   |> should.equal(Ok(<<"Hello!":utf8>>))
 }
 
-pub fn verify_signed_message_512_ko_test() {
+pub fn verify_signed_message_sha512_ko_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha512)
+  |> crypto.verify_signed_message(<<"other":utf8>>)
+  |> should.equal(Error(Nil))
+}
+
+pub fn verify_signed_message_sha1_ok_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha1)
+  |> crypto.verify_signed_message(<<"secret":utf8>>)
+  |> should.equal(Ok(<<"Hello!":utf8>>))
+}
+
+pub fn verify_signed_message_sha1_ko_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha1)
   |> crypto.verify_signed_message(<<"other":utf8>>)
   |> should.equal(Error(Nil))
 }

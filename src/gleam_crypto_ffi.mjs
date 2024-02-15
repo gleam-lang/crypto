@@ -1,5 +1,5 @@
 import { BitArray } from "./gleam.mjs";
-import { Sha224, Sha256, Sha384, Sha512, Md5 } from "./gleam/crypto.mjs";
+import { Sha1, Sha224, Sha256, Sha384, Sha512, Md5 } from "./gleam/crypto.mjs";
 import * as crypto from "node:crypto";
 
 function webCrypto() {
@@ -10,7 +10,9 @@ function webCrypto() {
 }
 
 function algorithmName(algorithm) {
-  if (algorithm instanceof Sha224) {
+  if (algorithm instanceof Sha1) {
+    return "sha1";
+  } else if (algorithm instanceof Sha224) {
     return "sha224";
   } else if (algorithm instanceof Sha256) {
     return "sha256";

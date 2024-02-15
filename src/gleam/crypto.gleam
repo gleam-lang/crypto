@@ -28,10 +28,14 @@ pub type HashAlgorithm {
   /// security purposes. It may still be useful for non-security purposes or for
   /// compatibility with existing systems.
   Md5
+  /// The SHA1 hash algorithm is considered weak and should not be used for
+  /// security purposes. It may still be useful for non-security purposes or for
+  /// compatibility with existing systems.
+  Sha1
 }
 
 /// Computes a digest of the input bit string.
-@external(erlang, "crypto", "hash")
+@external(erlang, "gleam_crypto_ffi", "hash")
 @external(javascript, "../gleam_crypto_ffi.mjs", "hash")
 pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray
 
@@ -93,7 +97,8 @@ fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
     Sha256 -> "HS256"
     Sha384 -> "HS384"
     Sha512 -> "HS512"
-    Md5 -> "Md5"
+    Sha1 -> "HS1"
+    Md5 -> "HMD5"
   }
   string.concat([
     bit_array.base64_url_encode(<<protected:utf8>>, False),
@@ -129,6 +134,10 @@ pub fn verify_signed_message(
     <<72, 83, 51, 56, 52>> -> Ok(Sha384)
     // <<"HS512":utf8>> 
     <<72, 83, 53, 49, 50>> -> Ok(Sha512)
+    // <<"HS1":utf8>> 
+    <<72, 83, 49>> -> Ok(Sha1)
+    // <<"HMD5":utf8>> 
+    <<72, 77, 68, 53>> -> Ok(Md5)
     _ -> Error(Nil)
   })
   let challenge = hmac(<<text:utf8>>, digest_type, secret)

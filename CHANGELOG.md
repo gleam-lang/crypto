@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.0 - 2024-02-15
+
+- Added the MD5 hash algorithm. This algorithm is broken and  not recommended
+  for security purposes, but may be useful for interoperability with systems
+  that use MD5.
+- Fixed a bug where signing and verifying messages would not work correctly with
+  the md5 hash algorithm.
+
 ## v1.2.0 - 2024-02-15
 
 - Added the MD5 hash algorithm. This algorithm is broken and  not recommended

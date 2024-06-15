@@ -45,6 +45,41 @@ pub fn hash_sha512_test() {
   >>)
 }
 
+pub fn hash_sha3_224_test() {
+  crypto.hash(crypto.Sha3224, <<"hi":utf8>>)
+  |> should.equal(<<
+    69, 56, 170, 204, 108, 202, 225, 103, 235, 70, 43, 210, 214, 206, 211, 83,
+    126, 223, 111, 141, 136, 175, 112, 155, 231, 177, 48, 192,
+  >>)
+}
+
+pub fn hash_sha3_256_test() {
+  crypto.hash(crypto.Sha3256, <<"hi":utf8>>)
+  |> should.equal(<<
+    179, 156, 20, 200, 218, 59, 35, 129, 31, 100, 21, 183, 224, 179, 53, 38, 215,
+    224, 122, 70, 242, 207, 4, 132, 23, 148, 53, 118, 126, 74, 136, 4,
+  >>)
+}
+
+pub fn hash_sha3_384_test() {
+  crypto.hash(crypto.Sha3384, <<"hi":utf8>>)
+  |> should.equal(<<
+    26, 63, 130, 34, 74, 227, 192, 147, 61, 151, 199, 226, 229, 212, 139, 115,
+    249, 62, 173, 249, 16, 87, 161, 181, 77, 78, 189, 217, 236, 55, 189, 77, 115,
+    200, 251, 155, 150, 81, 93, 171, 252, 111, 160, 163, 55, 145, 243, 212,
+  >>)
+}
+
+pub fn hash_sha3_512_test() {
+  crypto.hash(crypto.Sha3512, <<"hi":utf8>>)
+  |> should.equal(<<
+    21, 64, 19, 203, 129, 64, 199, 83, 240, 172, 53, 141, 166, 17, 15, 226, 55,
+    72, 27, 38, 199, 92, 61, 220, 27, 89, 234, 249, 221, 123, 70, 160, 163, 174,
+    178, 206, 241, 100, 179, 200, 45, 101, 179, 138, 78, 38, 234, 153, 48, 183,
+    178, 203, 60, 1, 218, 75, 163, 49, 201, 94, 98, 204, 185, 195,
+  >>)
+}
+
 pub fn hash_md5_test() {
   crypto.hash(crypto.Md5, <<"hi":utf8>>)
   |> should.equal(<<
@@ -88,6 +123,45 @@ pub fn hmac_sha512_test() {
     160, 60, 66, 220, 202, 26, 48, 237, 14, 53, 239, 74, 128, 194, 103, 182, 14,
     122, 31, 46, 26, 94, 1, 82, 22, 206, 122, 94, 1, 219, 240, 237, 41, 83, 39,
     149, 237, 179, 39, 132, 160, 170, 5, 160, 231, 143, 105,
+  >>)
+}
+
+pub fn hmac_sha3_224_test() {
+  <<"Aladin":utf8>>
+  |> crypto.hmac(crypto.Sha3224, <<"secret":utf8>>)
+  |> should.equal(<<
+    232, 220, 105, 240, 79, 34, 133, 213, 124, 62, 178, 35, 67, 179, 211, 229,
+    98, 219, 225, 97, 239, 143, 246, 153, 203, 183, 117, 139,
+  >>)
+}
+
+pub fn hmac_sha3_256_test() {
+  <<"Aladin":utf8>>
+  |> crypto.hmac(crypto.Sha3256, <<"secret":utf8>>)
+  |> should.equal(<<
+    173, 168, 107, 108, 225, 130, 112, 44, 253, 29, 220, 36, 255, 204, 189, 191,
+    217, 211, 240, 174, 4, 201, 209, 254, 138, 89, 214, 224, 24, 123, 114, 171,
+  >>)
+}
+
+pub fn hmac_sha3_384_test() {
+  <<"Aladin":utf8>>
+  |> crypto.hmac(crypto.Sha3384, <<"secret":utf8>>)
+  |> should.equal(<<
+    188, 250, 41, 176, 237, 143, 249, 135, 114, 39, 133, 97, 194, 116, 201, 135,
+    172, 105, 174, 188, 174, 188, 99, 63, 207, 232, 8, 185, 249, 92, 99, 203, 81,
+    74, 229, 79, 93, 153, 134, 129, 233, 216, 153, 206, 226, 211, 19, 52,
+  >>)
+}
+
+pub fn hmac_sha3_512_test() {
+  <<"Aladin":utf8>>
+  |> crypto.hmac(crypto.Sha3512, <<"secret":utf8>>)
+  |> should.equal(<<
+    183, 220, 43, 80, 10, 76, 189, 8, 173, 58, 215, 174, 241, 115, 117, 140, 130,
+    167, 203, 72, 80, 39, 238, 148, 20, 219, 61, 70, 197, 48, 143, 89, 182, 173,
+    232, 212, 242, 140, 99, 20, 135, 99, 41, 36, 3, 191, 158, 198, 28, 54, 25,
+    24, 123, 179, 13, 120, 191, 195, 205, 148, 4, 84, 26, 115,
   >>)
 }
 
@@ -169,6 +243,50 @@ pub fn sign_message_512_test() {
   )
 }
 
+pub fn sign_message_3224_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3224)
+  |> should.equal("SFMzMjI0.SGVsbG8h.hER6RkviDh6bq8d3cZxxeMFEQmW6bN8kwukx6Q")
+
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret2":utf8>>, crypto.Sha3224)
+  |> should.equal("SFMzMjI0.SGVsbG8h.mS7eAl6w02Q6O8z-2zaAXxy3VdHE-n5ArpwF-Q")
+}
+
+pub fn sign_message_3256_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3256)
+  |> should.equal(
+    "SFMzMjU2.SGVsbG8h.Az5595iJ9pb53uxffgKkug7Y9jE1Zp_8p1nfIYSbORk",
+  )
+
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret2":utf8>>, crypto.Sha3256)
+  |> should.equal(
+    "SFMzMjU2.SGVsbG8h.b1XrlYvzyKjTGl9y7cj9kdGQI1cfIqCu0iltf38ZHno",
+  )
+}
+
+pub fn sign_message_3384_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3384)
+  |> should.equal(
+    "SFMzMzg0.SGVsbG8h.N1kJfavh4lVUrhbFQxAILkHbEYQzd9jz2S0qePpalT7vMFqp5xRLpTIT9FT2DrTj",
+  )
+
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret2":utf8>>, crypto.Sha3384)
+  |> should.equal(
+    "SFMzMzg0.SGVsbG8h.G0WRG9XdDE6Y-kd5MkZP1QzONWTGBSnyj9IL-5TgZdIB_Hmv9mT3lkM39NTqwJph",
+  )
+}
+
+pub fn sign_message_3512_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3512)
+  |> should.equal(
+    "SFMzNTEy.SGVsbG8h.fGuDx_7ML4x8x8e4oGiLbigorLtDg3RA3IPUNCZjFwGLR7Mhz2x3IG6jSKwftvbMuKhnbEtkGOIXe3pNGPebFw",
+  )
+
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret2":utf8>>, crypto.Sha3512)
+  |> should.equal(
+    "SFMzNTEy.SGVsbG8h.Hfq7oz53v2Gl_VkL1p54ngHJexqOTSU7j8ps4q14LnioQNOsWb5EV2QLuFSxK8wvypS0ppZiBKhkbZrBN7xsiA",
+  )
+}
+
 pub fn verify_signed_message_256_ok_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha256)
   |> crypto.verify_signed_message(<<"secret":utf8>>)
@@ -213,6 +331,55 @@ pub fn verify_signed_message_512_ok_test() {
 
 pub fn verify_signed_message_512_ko_test() {
   crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha512)
+  |> crypto.verify_signed_message(<<"other":utf8>>)
+  |> should.equal(Error(Nil))
+}
+
+pub fn verify_signed_message_3224_ok_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3224)
+  |> crypto.verify_signed_message(<<"secret":utf8>>)
+  |> should.equal(Ok(<<"Hello!":utf8>>))
+}
+
+pub fn verify_signed_message_3224_ko_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3224)
+  |> crypto.verify_signed_message(<<"other":utf8>>)
+  |> should.equal(Error(Nil))
+}
+
+pub fn verify_signed_message_3256_ok_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3256)
+  |> crypto.verify_signed_message(<<"secret":utf8>>)
+  |> should.equal(Ok(<<"Hello!":utf8>>))
+}
+
+pub fn verify_signed_message_3256_ko_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3256)
+  |> crypto.verify_signed_message(<<"other":utf8>>)
+  |> should.equal(Error(Nil))
+}
+
+
+pub fn verify_signed_message_3384_ok_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3384)
+  |> crypto.verify_signed_message(<<"secret":utf8>>)
+  |> should.equal(Ok(<<"Hello!":utf8>>))
+}
+
+pub fn verify_signed_message_3384_ko_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3384)
+  |> crypto.verify_signed_message(<<"other":utf8>>)
+  |> should.equal(Error(Nil))
+}
+
+pub fn verify_signed_message_3512_ok_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3512)
+  |> crypto.verify_signed_message(<<"secret":utf8>>)
+  |> should.equal(Ok(<<"Hello!":utf8>>))
+}
+
+pub fn verify_signed_message_3512_ko_test() {
+  crypto.sign_message(<<"Hello!":utf8>>, <<"secret":utf8>>, crypto.Sha3512)
   |> crypto.verify_signed_message(<<"other":utf8>>)
   |> should.equal(Error(Nil))
 }

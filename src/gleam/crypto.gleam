@@ -1,9 +1,9 @@
 //// Set of cryptographic functions.
 
 import gleam/bit_array
-import gleam/string
 import gleam/int
 import gleam/result
+import gleam/string
 
 /// Generates a specified number of bytes randomly uniform 0..255, and returns
 /// the result in a binary.
@@ -24,6 +24,10 @@ pub type HashAlgorithm {
   Sha256
   Sha384
   Sha512
+  Sha3224
+  Sha3256
+  Sha3384
+  Sha3512
   /// The MD5 hash algorithm is considered weak and should not be used for
   /// security purposes. It may still be useful for non-security purposes or for
   /// compatibility with existing systems.
@@ -31,7 +35,7 @@ pub type HashAlgorithm {
 }
 
 /// Computes a digest of the input bit string.
-@external(erlang, "crypto", "hash")
+@external(erlang, "gleam_crypto_ffi", "hash")
 @external(javascript, "../gleam_crypto_ffi.mjs", "hash")
 pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray
 
@@ -93,6 +97,10 @@ fn signing_input(digest_type: HashAlgorithm, message: BitArray) -> String {
     Sha256 -> "HS256"
     Sha384 -> "HS384"
     Sha512 -> "HS512"
+    Sha3224 -> "HS3224"
+    Sha3256 -> "HS3256"
+    Sha3384 -> "HS3384"
+    Sha3512 -> "HS3512"
     Md5 -> "Md5"
   }
   string.concat([
@@ -129,6 +137,14 @@ pub fn verify_signed_message(
     <<72, 83, 51, 56, 52>> -> Ok(Sha384)
     // <<"HS512":utf8>> 
     <<72, 83, 53, 49, 50>> -> Ok(Sha512)
+    // <<"HS3224":utf8>>
+    <<72, 83, 51, 50, 50, 52>> -> Ok(Sha3224)
+    // <<"HS3256":utf8>>
+    <<72, 83, 51, 50, 53, 54>> -> Ok(Sha3256)
+    // <<"HS3384":utf8>>
+    <<72, 83, 51, 51, 56, 52>> -> Ok(Sha3384)
+    // <<"HS3512":utf8>>
+    <<72, 83, 51, 53, 49, 50>> -> Ok(Sha3512)
     _ -> Error(Nil)
   })
   let challenge = hmac(<<text:utf8>>, digest_type, secret)

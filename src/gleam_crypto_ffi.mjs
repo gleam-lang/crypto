@@ -11,9 +11,7 @@ import {
   Md5,
 } from "./gleam/crypto.mjs";
 
-import { sha224, sha256, sha384, sha512 } from "@noble/hashes/sha2";
-import { sha3_224, sha3_256, sha3_384, sha3_512 } from "@noble/hashes/sha3";
-import { hmac as noble_hmac } from "@noble/hashes/hmac";
+import { noble } from "./noble-hashes-v1.4.0.mjs";
 import * as crypto from "node:crypto";
 
 function webCrypto() {
@@ -25,14 +23,14 @@ function webCrypto() {
 
 function getHashFunction(algorithm) {
   switch (true) {
-    case algorithm instanceof Sha224: return sha224;
-    case algorithm instanceof Sha256: return sha256;
-    case algorithm instanceof Sha384: return sha384;
-    case algorithm instanceof Sha512: return sha512;
-    case algorithm instanceof Sha3224: return sha3_224;
-    case algorithm instanceof Sha3256: return sha3_256;
-    case algorithm instanceof Sha3384: return sha3_384;
-    case algorithm instanceof Sha3512: return sha3_512;
+    case algorithm instanceof Sha224: return noble.sha224;
+    case algorithm instanceof Sha256: return noble.sha256;
+    case algorithm instanceof Sha384: return noble.sha384;
+    case algorithm instanceof Sha512: return noble.sha512;
+    case algorithm instanceof Sha3224: return noble.sha3_224;
+    case algorithm instanceof Sha3256: return noble.sha3_256;
+    case algorithm instanceof Sha3384: return noble.sha3_384;
+    case algorithm instanceof Sha3512: return noble.sha3_512;
     case algorithm instanceof Md5: return md5;
     default: throw new Error("Unsupported algorithm");
   }
@@ -61,7 +59,7 @@ export function hmac(data, algorithm, key) {
   if (algorithm instanceof Md5) {
     return crypto_hmac(data, "md5", key)
   } else {
-    return new BitArray(noble_hmac(getHashFunction(algorithm), key.buffer, data.buffer));
+    return new BitArray(noble.hmac(getHashFunction(algorithm), key.buffer, data.buffer));
   }
 }
 

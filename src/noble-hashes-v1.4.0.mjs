@@ -1,36 +1,15 @@
-// The MIT License (MIT)
-//
-// Copyright (c) 2022 Paul Miller (https://paulmillr.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the “Software”), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+/*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 
 // original file at https://github.com/paulmillr/noble-hashes/releases/download/1.4.0/noble-hashes.js
 //
-// this file differs slightly from the original in order to add sha224 and
-// sha384. those implemntations were copied from:
+// this file differs slightly from the original in order to add md5, sha224 and
+// sha384 support. the diff with the original 1.4.0 code-base can be viewed at
+// https://github.com/paulmillr/noble-hashes/compare/1.4.0...quixoten:noble-hashes:dc/1.4.0
 //
-// - https://github.com/paulmillr/noble-hashes/blob/1.4.0/src/sha256.ts#L109-L122
-// - https://github.com/paulmillr/noble-hashes/blob/1.4.0/src/sha512.ts#L218-L241
-//
-// the original was also changed to add the module export
+// additionally, `var nobleHashes = (() => {` was replaced with `export const noble = (() => {`
+
 "use strict";
-export var noble = (() => {
+export const noble = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -69,6 +48,7 @@ export var noble = (() => {
     kmac128: () => kmac128,
     kmac256: () => kmac256,
     m14: () => m14,
+    md5: () => md5,
     pbkdf2: () => pbkdf2,
     pbkdf2Async: () => pbkdf2Async,
     ripemd160: () => ripemd160,
@@ -77,11 +57,11 @@ export var noble = (() => {
     sha1: () => sha1,
     sha224: () => sha224,
     sha256: () => sha256,
+    sha384: () => sha384,
     sha3_224: () => sha3_224,
     sha3_256: () => sha3_256,
     sha3_384: () => sha3_384,
     sha3_512: () => sha3_512,
-    sha384: () => sha384,
     sha512: () => sha512,
     turboshake128: () => turboshake128,
     turboshake256: () => turboshake256,
@@ -1004,10 +984,10 @@ export var noble = (() => {
     }
     _cloneInto(to) {
       to = super._cloneInto(to);
-      const { IV, flags, state, chunkPos, posOut, chunkOut, stack, chunksDone } = this;
+      const { IV: IV2, flags, state, chunkPos, posOut, chunkOut, stack, chunksDone } = this;
       to.state.set(state.slice());
       to.stack = stack.map((i) => Uint32Array.from(i));
-      to.IV.set(IV);
+      to.IV.set(IV2);
       to.flags = flags;
       to.chunkPos = chunkPos;
       to.chunksDone = chunksDone;
@@ -1215,70 +1195,6 @@ export var noble = (() => {
   }
   var hkdf = (hash2, ikm, salt, info, length) => expand(hash2, extract(hash2, ikm, salt), info, length);
 
-  // ../esm/pbkdf2.js
-  function pbkdf2Init(hash2, _password, _salt, _opts) {
-    hash(hash2);
-    const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
-    const { c, dkLen, asyncTick } = opts;
-    number(c);
-    number(dkLen);
-    number(asyncTick);
-    if (c < 1)
-      throw new Error("PBKDF2: iterations (c) should be >= 1");
-    const password = toBytes(_password);
-    const salt = toBytes(_salt);
-    const DK = new Uint8Array(dkLen);
-    const PRF = hmac.create(hash2, password);
-    const PRFSalt = PRF._cloneInto().update(salt);
-    return { c, dkLen, asyncTick, DK, PRF, PRFSalt };
-  }
-  function pbkdf2Output(PRF, PRFSalt, DK, prfW, u) {
-    PRF.destroy();
-    PRFSalt.destroy();
-    if (prfW)
-      prfW.destroy();
-    u.fill(0);
-    return DK;
-  }
-  function pbkdf2(hash2, password, salt, opts) {
-    const { c, dkLen, DK, PRF, PRFSalt } = pbkdf2Init(hash2, password, salt, opts);
-    let prfW;
-    const arr = new Uint8Array(4);
-    const view = createView(arr);
-    const u = new Uint8Array(PRF.outputLen);
-    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += PRF.outputLen) {
-      const Ti = DK.subarray(pos, pos + PRF.outputLen);
-      view.setInt32(0, ti, false);
-      (prfW = PRFSalt._cloneInto(prfW)).update(arr).digestInto(u);
-      Ti.set(u.subarray(0, Ti.length));
-      for (let ui = 1; ui < c; ui++) {
-        PRF._cloneInto(prfW).update(u).digestInto(u);
-        for (let i = 0; i < Ti.length; i++)
-          Ti[i] ^= u[i];
-      }
-    }
-    return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
-  }
-  async function pbkdf2Async(hash2, password, salt, opts) {
-    const { c, dkLen, asyncTick, DK, PRF, PRFSalt } = pbkdf2Init(hash2, password, salt, opts);
-    let prfW;
-    const arr = new Uint8Array(4);
-    const view = createView(arr);
-    const u = new Uint8Array(PRF.outputLen);
-    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += PRF.outputLen) {
-      const Ti = DK.subarray(pos, pos + PRF.outputLen);
-      view.setInt32(0, ti, false);
-      (prfW = PRFSalt._cloneInto(prfW)).update(arr).digestInto(u);
-      Ti.set(u.subarray(0, Ti.length));
-      await asyncLoop(c - 1, asyncTick, () => {
-        PRF._cloneInto(prfW).update(u).digestInto(u);
-        for (let i = 0; i < Ti.length; i++)
-          Ti[i] ^= u[i];
-      });
-    }
-    return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
-  }
-
   // ../esm/_md.js
   function setBigUint64(view, byteOffset, value, isLE2) {
     if (typeof view.setBigUint64 === "function")
@@ -1380,6 +1296,202 @@ export var noble = (() => {
       return to;
     }
   };
+
+  // ../esm/md5.js
+  var MD5_K = /* @__PURE__ */ new Uint32Array([
+    3614090360,
+    3905402710,
+    606105819,
+    3250441966,
+    4118548399,
+    1200080426,
+    2821735955,
+    4249261313,
+    1770035416,
+    2336552879,
+    4294925233,
+    2304563134,
+    1804603682,
+    4254626195,
+    2792965006,
+    1236535329,
+    4129170786,
+    3225465664,
+    643717713,
+    3921069994,
+    3593408605,
+    38016083,
+    3634488961,
+    3889429448,
+    568446438,
+    3275163606,
+    4107603335,
+    1163531501,
+    2850285829,
+    4243563512,
+    1735328473,
+    2368359562,
+    4294588738,
+    2272392833,
+    1839030562,
+    4259657740,
+    2763975236,
+    1272893353,
+    4139469664,
+    3200236656,
+    681279174,
+    3936430074,
+    3572445317,
+    76029189,
+    3654602809,
+    3873151461,
+    530742520,
+    3299628645,
+    4096336452,
+    1126891415,
+    2878612391,
+    4237533241,
+    1700485571,
+    2399980690,
+    4293915773,
+    2240044497,
+    1873313359,
+    4264355552,
+    2734768916,
+    1309151649,
+    4149444226,
+    3174756917,
+    718787259,
+    3951481745
+  ]);
+  var IV = /* @__PURE__ */ new Uint32Array([1732584193, 4023233417, 2562383102, 271733878]);
+  var MD5_W = /* @__PURE__ */ new Uint32Array(16);
+  var MD5 = class extends HashMD {
+    constructor() {
+      super(64, 16, 8, true);
+      this.A = IV[0] | 0;
+      this.B = IV[1] | 0;
+      this.C = IV[2] | 0;
+      this.D = IV[3] | 0;
+    }
+    get() {
+      const { A, B, C, D } = this;
+      return [A, B, C, D];
+    }
+    set(A, B, C, D) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        MD5_W[i] = view.getUint32(offset, true);
+      let { A, B, C, D } = this;
+      for (let i = 0; i < 64; i++) {
+        let F, g, s;
+        if (i < 16) {
+          F = Chi(B, C, D);
+          g = i;
+          s = [7, 12, 17, 22];
+        } else if (i < 32) {
+          F = Chi(D, B, C);
+          g = (5 * i + 1) % 16;
+          s = [5, 9, 14, 20];
+        } else if (i < 48) {
+          F = B ^ C ^ D;
+          g = (3 * i + 5) % 16;
+          s = [4, 11, 16, 23];
+        } else {
+          F = C ^ (B | ~D);
+          g = 7 * i % 16;
+          s = [6, 10, 15, 21];
+        }
+        F = F + A + MD5_K[i] + MD5_W[g];
+        A = D;
+        D = C;
+        C = B;
+        B = B + rotl(F, s[i % 4]);
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      this.set(A, B, C, D);
+    }
+    roundClean() {
+      MD5_W.fill(0);
+    }
+    destroy() {
+      this.set(0, 0, 0, 0);
+      this.buffer.fill(0);
+    }
+  };
+  var md5 = /* @__PURE__ */ wrapConstructor(() => new MD5());
+
+  // ../esm/pbkdf2.js
+  function pbkdf2Init(hash2, _password, _salt, _opts) {
+    hash(hash2);
+    const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
+    const { c, dkLen, asyncTick } = opts;
+    number(c);
+    number(dkLen);
+    number(asyncTick);
+    if (c < 1)
+      throw new Error("PBKDF2: iterations (c) should be >= 1");
+    const password = toBytes(_password);
+    const salt = toBytes(_salt);
+    const DK = new Uint8Array(dkLen);
+    const PRF = hmac.create(hash2, password);
+    const PRFSalt = PRF._cloneInto().update(salt);
+    return { c, dkLen, asyncTick, DK, PRF, PRFSalt };
+  }
+  function pbkdf2Output(PRF, PRFSalt, DK, prfW, u) {
+    PRF.destroy();
+    PRFSalt.destroy();
+    if (prfW)
+      prfW.destroy();
+    u.fill(0);
+    return DK;
+  }
+  function pbkdf2(hash2, password, salt, opts) {
+    const { c, dkLen, DK, PRF, PRFSalt } = pbkdf2Init(hash2, password, salt, opts);
+    let prfW;
+    const arr = new Uint8Array(4);
+    const view = createView(arr);
+    const u = new Uint8Array(PRF.outputLen);
+    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += PRF.outputLen) {
+      const Ti = DK.subarray(pos, pos + PRF.outputLen);
+      view.setInt32(0, ti, false);
+      (prfW = PRFSalt._cloneInto(prfW)).update(arr).digestInto(u);
+      Ti.set(u.subarray(0, Ti.length));
+      for (let ui = 1; ui < c; ui++) {
+        PRF._cloneInto(prfW).update(u).digestInto(u);
+        for (let i = 0; i < Ti.length; i++)
+          Ti[i] ^= u[i];
+      }
+    }
+    return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
+  }
+  async function pbkdf2Async(hash2, password, salt, opts) {
+    const { c, dkLen, asyncTick, DK, PRF, PRFSalt } = pbkdf2Init(hash2, password, salt, opts);
+    let prfW;
+    const arr = new Uint8Array(4);
+    const view = createView(arr);
+    const u = new Uint8Array(PRF.outputLen);
+    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += PRF.outputLen) {
+      const Ti = DK.subarray(pos, pos + PRF.outputLen);
+      view.setInt32(0, ti, false);
+      (prfW = PRFSalt._cloneInto(prfW)).update(arr).digestInto(u);
+      Ti.set(u.subarray(0, Ti.length));
+      await asyncLoop(c - 1, asyncTick, () => {
+        PRF._cloneInto(prfW).update(u).digestInto(u);
+        for (let i = 0; i < Ti.length; i++)
+          Ti[i] ^= u[i];
+      });
+    }
+    return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
+  }
 
   // ../esm/ripemd160.js
   var Rho = /* @__PURE__ */ new Uint8Array([7, 4, 13, 1, 10, 6, 15, 3, 12, 0, 9, 5, 2, 14, 11, 8]);
@@ -1624,21 +1736,21 @@ export var noble = (() => {
       this.set(0, 0, 0, 0, 0, 0, 0, 0);
       this.buffer.fill(0);
     }
-  }
-  var SHA224  = class extends SHA256 {
-  A = 0xc1059ed8 | 0;
-  B = 0x367cd507 | 0;
-  C = 0x3070dd17 | 0;
-  D = 0xf70e5939 | 0;
-  E = 0xffc00b31 | 0;
-  F = 0x68581511 | 0;
-  G = 0x64f98fa7 | 0;
-  H = 0xbefa4fa4 | 0;
-  constructor() {
-    super();
-    this.outputLen = 28;
-  }
-};
+  };
+  var SHA224 = class extends SHA256 {
+    constructor() {
+      super();
+      this.A = 3238371032 | 0;
+      this.B = 914150663 | 0;
+      this.C = 812702999 | 0;
+      this.D = 4144912697 | 0;
+      this.E = 4290775857 | 0;
+      this.F = 1750603025 | 0;
+      this.G = 1694076839 | 0;
+      this.H = 3204075428 | 0;
+      this.outputLen = 28;
+    }
+  };
   var sha256 = /* @__PURE__ */ wrapConstructor(() => new SHA256());
   var sha224 = /* @__PURE__ */ wrapConstructor(() => new SHA224());
 
@@ -2022,33 +2134,30 @@ export var noble = (() => {
       this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   };
-
   var SHA384 = class extends SHA512 {
-  // h -- high 32 bits, l -- low 32 bits
-  Ah = 0xcbbb9d5d | 0;
-  Al = 0xc1059ed8 | 0;
-  Bh = 0x629a292a | 0;
-  Bl = 0x367cd507 | 0;
-  Ch = 0x9159015a | 0;
-  Cl = 0x3070dd17 | 0;
-  Dh = 0x152fecd8 | 0;
-  Dl = 0xf70e5939 | 0;
-  Eh = 0x67332667 | 0;
-  El = 0xffc00b31 | 0;
-  Fh = 0x8eb44a87 | 0;
-  Fl = 0x68581511 | 0;
-  Gh = 0xdb0c2e0d | 0;
-  Gl = 0x64f98fa7 | 0;
-  Hh = 0x47b5481d | 0;
-  Hl = 0xbefa4fa4 | 0;
-
-  constructor() {
-    super();
-    this.outputLen = 48;
-  }
-}
-  var sha384 = /* @__PURE__ */ wrapConstructor(() => new SHA384());
+    constructor() {
+      super();
+      this.Ah = 3418070365 | 0;
+      this.Al = 3238371032 | 0;
+      this.Bh = 1654270250 | 0;
+      this.Bl = 914150663 | 0;
+      this.Ch = 2438529370 | 0;
+      this.Cl = 812702999 | 0;
+      this.Dh = 355462360 | 0;
+      this.Dl = 4144912697 | 0;
+      this.Eh = 1731405415 | 0;
+      this.El = 4290775857 | 0;
+      this.Fh = 2394180231 | 0;
+      this.Fl = 1750603025 | 0;
+      this.Gh = 3675008525 | 0;
+      this.Gl = 1694076839 | 0;
+      this.Hh = 1203062813 | 0;
+      this.Hl = 3204075428 | 0;
+      this.outputLen = 48;
+    }
+  };
   var sha512 = /* @__PURE__ */ wrapConstructor(() => new SHA512());
+  var sha384 = /* @__PURE__ */ wrapConstructor(() => new SHA384());
 
   // ../esm/sha3.js
   var SHA3_PI = [];
@@ -2844,4 +2953,3 @@ export var noble = (() => {
   var utils = { bytesToHex, hexToBytes, concatBytes, utf8ToBytes, randomBytes };
   return __toCommonJS(input_exports);
 })();
-/*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */

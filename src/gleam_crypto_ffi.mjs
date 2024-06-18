@@ -12,7 +12,6 @@ import {
 } from "./gleam/crypto.mjs";
 
 import { noble } from "./noble-hashes-v1.4.0.mjs";
-import * as crypto from "node:crypto";
 
 function webCrypto() {
   if (!globalThis.crypto?.getRandomValues) {
@@ -31,15 +30,9 @@ function getHashFunction(algorithm) {
     case algorithm instanceof Sha3256: return noble.sha3_256;
     case algorithm instanceof Sha3384: return noble.sha3_384;
     case algorithm instanceof Sha3512: return noble.sha3_512;
-    case algorithm instanceof Md5: return md5;
+    case algorithm instanceof Md5: return noble.md5;
     default: throw new Error("Unsupported algorithm");
   }
-}
-
-function md5(buffer) {
-  const hasher = crypto.createHash("md5");
-  hasher.update(buffer);
-  return new Uint8Array(hasher.digest());
 }
 
 export function strongRandomBytes(n) {
@@ -48,19 +41,10 @@ export function strongRandomBytes(n) {
   return new BitArray(array);
 }
 
-function crypto_hmac(data, algorithm, key) {
-   const hmac = crypto.createHmac(algorithm, key.buffer);
-   hmac.update(data.buffer);
-   const array = new Uint8Array(hmac.digest());
-   return new BitArray(array);
-}
-
 export function hmac(data, algorithm, key) {
-  if (algorithm instanceof Md5) {
-    return crypto_hmac(data, "md5", key)
-  } else {
-    return new BitArray(noble.hmac(getHashFunction(algorithm), key.buffer, data.buffer));
-  }
+  return new BitArray(
+    noble.hmac(getHashFunction(algorithm), key.buffer, data.buffer),
+  );
 }
 
 export function hash(algorithm, data) {

@@ -9,5 +9,5 @@ A Gleam cryptography library supporting Erlang and JavaScript.
 ## Installation
 
 ```
-gleam add gleam_crypto
+gleam add gleam_crypto@1
 ```

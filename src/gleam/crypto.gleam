@@ -1,9 +1,9 @@
 //// Set of cryptographic functions.
 
 import gleam/bit_array
-import gleam/string
 import gleam/int
 import gleam/result
+import gleam/string
 
 /// Generates a specified number of bytes randomly uniform 0..255, and returns
 /// the result in a binary.
@@ -38,6 +38,23 @@ pub type HashAlgorithm {
 @external(erlang, "gleam_crypto_ffi", "hash")
 @external(javascript, "../gleam_crypto_ffi.mjs", "hash")
 pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray
+
+pub type HashState
+
+/// Starts hash algorithm for streaming
+@external(erlang, "gleam_crypto_ffi", "hash_init")
+@external(javascript, "../gleam_crypto_ffi.mjs", "hashInit")
+pub fn hash_init(a: HashAlgorithm) -> HashState
+
+/// Starts hash algorithm for streaming
+@external(erlang, "crypto", "hash_update")
+@external(javascript, "../gleam_crypto_ffi.mjs", "hashUpdate")
+pub fn hash_update(state: HashState, data: BitArray) -> HashState
+
+/// Starts hash algorithm for streaming
+@external(erlang, "crypto", "hash_final")
+@external(javascript, "../gleam_crypto_ffi.mjs", "hashFinal")
+pub fn hash_final(state: HashState) -> BitArray
 
 /// Calculates the HMAC (hash-based message authentication code) for a bit
 /// string.
@@ -132,11 +149,11 @@ pub fn verify_signed_message(
     <<72, 83, 50, 53, 54>> -> Ok(Sha256)
     // <<"HS384":utf8>>
     <<72, 83, 51, 56, 52>> -> Ok(Sha384)
-    // <<"HS512":utf8>> 
+    // <<"HS512":utf8>>
     <<72, 83, 53, 49, 50>> -> Ok(Sha512)
-    // <<"HS1":utf8>> 
+    // <<"HS1":utf8>>
     <<72, 83, 49>> -> Ok(Sha1)
-    // <<"HMD5":utf8>> 
+    // <<"HMD5":utf8>>
     <<72, 77, 68, 53>> -> Ok(Md5)
     _ -> Error(Nil)
   })

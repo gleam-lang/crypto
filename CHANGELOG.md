@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.0 - TBD
+
+- Add support for streaming hash digest calculation.
+
 ## v1.3.0 - 2024-02-15
 
 - Added the MD5 hash algorithm. This algorithm is broken and  not recommended

@@ -1,5 +1,5 @@
 -module(gleam_crypto_ffi).
--export([hmac/3, hash/2]).
+-export([hmac/3, hash/2, hash_init/1]).
 
 convert_algorithm(Algorithm) ->
     case Algorithm of
@@ -12,3 +12,6 @@ hmac(Data, Algorithm, Key) ->
 
 hash(Algorithm, Data) ->
     crypto:hash(convert_algorithm(Algorithm), Data).
+
+hash_init(Algorithm) ->
+    crypto:hash_init(convert_algorithm(Algorithm)).

@@ -46,3 +46,17 @@ export function hash(algorithm, data) {
   const array = new Uint8Array(hasher.digest());
   return new BitArray(array);
 }
+
+export function hashInit(algorithm) {
+  return crypto.createHash(algorithmName(algorithm));
+}
+
+export function hashUpdate(state, data) {
+  state.update(data.buffer);
+  return state;
+}
+
+export function hashFinal(state) {
+  const array = new Uint8Array(state.digest());
+  return new BitArray(array);
+}

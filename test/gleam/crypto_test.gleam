@@ -18,12 +18,28 @@ pub fn hash_sha1_test() {
   >>)
 }
 
+pub fn hash_sha1_stream_test() {
+  crypto.hash_init(crypto.Sha1)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Sha1, <<"hello stream":utf8>>))
+}
+
 pub fn hash_sha256_test() {
   crypto.hash(crypto.Sha256, <<"hi":utf8>>)
   |> should.equal(<<
     143, 67, 67, 70, 100, 143, 107, 150, 223, 137, 221, 169, 1, 197, 23, 107, 16,
     166, 216, 57, 97, 221, 60, 26, 200, 139, 89, 178, 220, 50, 122, 164,
   >>)
+}
+
+pub fn hash_sha256_stream_test() {
+  crypto.hash_init(crypto.Sha256)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Sha256, <<"hello stream":utf8>>))
 }
 
 pub fn hash_sha224_test() {
@@ -34,6 +50,14 @@ pub fn hash_sha224_test() {
   >>)
 }
 
+pub fn hash_sha224_stream_test() {
+  crypto.hash_init(crypto.Sha224)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Sha224, <<"hello stream":utf8>>))
+}
+
 pub fn hash_sha384_test() {
   crypto.hash(crypto.Sha384, <<"hi":utf8>>)
   |> should.equal(<<
@@ -41,6 +65,14 @@ pub fn hash_sha384_test() {
     31, 85, 117, 117, 16, 226, 106, 206, 227, 92, 24, 166, 188, 234, 162, 141,
     205, 187, 253, 109, 192, 65, 185, 180, 220, 123, 27, 84, 227, 127, 82,
   >>)
+}
+
+pub fn hash_sha384_stream_test() {
+  crypto.hash_init(crypto.Sha384)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Sha384, <<"hello stream":utf8>>))
 }
 
 pub fn hash_sha512_test() {
@@ -53,11 +85,27 @@ pub fn hash_sha512_test() {
   >>)
 }
 
+pub fn hash_sha512_stream_test() {
+  crypto.hash_init(crypto.Sha512)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Sha512, <<"hello stream":utf8>>))
+}
+
 pub fn hash_md5_test() {
   crypto.hash(crypto.Md5, <<"hi":utf8>>)
   |> should.equal(<<
     73, 246, 138, 92, 132, 147, 236, 44, 11, 244, 137, 130, 28, 33, 252, 59,
   >>)
+}
+
+pub fn hash_md5_stream_test() {
+  crypto.hash_init(crypto.Md5)
+  |> crypto.hash_update(<<"hello ":utf8>>)
+  |> crypto.hash_update(<<"stream":utf8>>)
+  |> crypto.hash_final
+  |> should.equal(crypto.hash(crypto.Md5, <<"hello stream":utf8>>))
 }
 
 pub fn hmac_sha256_test() {

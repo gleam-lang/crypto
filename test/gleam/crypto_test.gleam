@@ -20,9 +20,9 @@ pub fn hash_sha1_test() {
 
 pub fn hash_sha1_stream_test() {
   crypto.hash_init(crypto.Sha1)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Sha1, <<"hello stream":utf8>>))
 }
 
@@ -36,9 +36,9 @@ pub fn hash_sha256_test() {
 
 pub fn hash_sha256_stream_test() {
   crypto.hash_init(crypto.Sha256)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Sha256, <<"hello stream":utf8>>))
 }
 
@@ -52,9 +52,9 @@ pub fn hash_sha224_test() {
 
 pub fn hash_sha224_stream_test() {
   crypto.hash_init(crypto.Sha224)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Sha224, <<"hello stream":utf8>>))
 }
 
@@ -69,9 +69,9 @@ pub fn hash_sha384_test() {
 
 pub fn hash_sha384_stream_test() {
   crypto.hash_init(crypto.Sha384)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Sha384, <<"hello stream":utf8>>))
 }
 
@@ -87,9 +87,9 @@ pub fn hash_sha512_test() {
 
 pub fn hash_sha512_stream_test() {
   crypto.hash_init(crypto.Sha512)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Sha512, <<"hello stream":utf8>>))
 }
 
@@ -102,9 +102,9 @@ pub fn hash_md5_test() {
 
 pub fn hash_md5_stream_test() {
   crypto.hash_init(crypto.Md5)
-  |> crypto.hash_update(<<"hello ":utf8>>)
-  |> crypto.hash_update(<<"stream":utf8>>)
-  |> crypto.hash_final
+  |> crypto.hash_update(with: <<"hello ":utf8>>)
+  |> crypto.hash_update(with: <<"stream":utf8>>)
+  |> crypto.digest
   |> should.equal(crypto.hash(crypto.Md5, <<"hello stream":utf8>>))
 }
 

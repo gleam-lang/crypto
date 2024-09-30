@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.0 - TBD
+## v1.4.0 - 2024-09-30
 
 - Add support for streaming hash digest calculation.
 

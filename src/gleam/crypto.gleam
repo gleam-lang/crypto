@@ -37,16 +37,18 @@ pub type HashAlgorithm {
 pub type Hasher
 
 /// Computes a digest of the input bit string.
-/// Uses `hash_init`, `hash_update` and `digest` for calculation.
 ///
-/// Example:
+/// ## Examples
+///
 /// ```gleam
-/// let digest = <<hash(Sha256, <<"a":utf8>>):int>>
+/// let digest = hash(Sha256, <<"a":utf8>>)
 /// ```
+/// If you wish to to hash content in multiple chunks rather than all at once
+/// see the `new_hasher` function.
 ///
-pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray {
-  hash_init(a)
-  |> hash_update(b)
+pub fn hash(algorithm: HashAlgorithm, data: BitArray) -> BitArray {
+  new_hasher(algorithm)
+  |> hash_chunk(data)
   |> digest
 }
 
@@ -57,71 +59,34 @@ pub fn hash(a: HashAlgorithm, b: BitArray) -> BitArray {
 /// It is useful for hashing streams of data or
 /// large amount of it without the need to load it all to the memory.
 ///
-/// Simple example:
+/// ## Examples
+///
 /// ```gleam
 /// let hash =
-///   hash_init(Sha512)
-///   |> hash_update(with: <<"data to hash":utf8>>)
+///   new_hasher(Sha512)
+///   |> hash_chunk(<<"data to hash":utf8>>)
 ///   |> digest
-/// ```
-///
-/// Example actor that hashes incoming stream of messages.
-/// ```gleam
-/// import gleam/erlang/process.{type Subject}
-/// import gleam/otp/actor
-/// import gleam/crypto
-///
-/// pub type Command {
-///   Hash(data: BitArray)
-///   Finalize(reply_with: Subject(BitArray))
-///   Shutdown
-/// }
-///
-/// // Receive chunks of message to digest in `Hash` messages.
-/// // Responds with digest after receiving Finalize message.
-/// fn handle_message(
-///   algorithm: crypto.HashAlgorithm,
-/// ) -> fn(Command, crypto.Hasher) -> actor.Next(Command, crypto.Hasher) {
-///   fn(message: Command, hasher: crypto.Hasher) {
-///     case message {
-///       Shutdown -> actor.Stop(process.Normal)
-///       Hash(hash_chunk) -> actor.continue(crypto.hash_update(hasher, hash_chunk))
-///       Finalize(client) -> {
-///         process.send(client, crypto.digest(hasher))
-///         actor.continue(crypto.hash_init(algorithm))
-///       }
-///     }
-///   }
-/// }
-///
-/// fn start_actor(algorithm: crypto.HashAlgorithm) {
-///   actor.start(crypto.hash_init(algorithm), handle_message(algorithm))
-/// }
-///
-/// let assert Ok(my_actor) = start_actor(crypto.Sha256)
-/// process.send(my_actor, Hash(<<"chunk1":utf8>>))
-/// // many more message chunks
-/// process.send(my_actor, Hash(<<"chunkN":utf8>>))
-/// let digest = process.call(my_actor, Finalize, 1000)
 /// ```
 ///
 @external(erlang, "gleam_crypto_ffi", "hash_init")
 @external(javascript, "../gleam_crypto_ffi.mjs", "hashInit")
-pub fn hash_init(algorithm algorithm: HashAlgorithm) -> Hasher
+pub fn new_hasher(algorithm: HashAlgorithm) -> Hasher
 
 /// Adds data to a streaming digest calculation.
-/// See hash_init for more information and examples.
+///
+/// See `new_hasher` for more information and examples.
 ///
 @external(erlang, "crypto", "hash_update")
 @external(javascript, "../gleam_crypto_ffi.mjs", "hashUpdate")
-pub fn hash_update(hasher hasher: Hasher, with hash_chunk: BitArray) -> Hasher
+pub fn hash_chunk(hasher: Hasher, chunk: BitArray) -> Hasher
 
 /// Finalizes a streaming hash calculation.
-/// See hash_init for more information and examples.
+///
+/// See `new_hasher` for more information and examples.
 ///
 @external(erlang, "crypto", "hash_final")
 @external(javascript, "../gleam_crypto_ffi.mjs", "digest")
-pub fn digest(hasher hasher: Hasher) -> BitArray
+pub fn digest(hasher: Hasher) -> BitArray
 
 /// Calculates the HMAC (hash-based message authentication code) for a bit
 /// string.

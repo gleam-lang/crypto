@@ -37,6 +37,7 @@ pub type HashAlgorithm {
 pub type Hasher
 
 /// Computes a digest of the input bit string.
+/// Uses `hash_init`, `hash_update` and `digest` for calculation.
 ///
 /// Example:
 /// ```gleam

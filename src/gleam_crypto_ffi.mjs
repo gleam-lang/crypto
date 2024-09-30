@@ -40,23 +40,16 @@ export function hmac(data, algorithm, key) {
   return new BitArray(array);
 }
 
-export function hash(algorithm, data) {
-  const hasher = crypto.createHash(algorithmName(algorithm));
-  hasher.update(data.buffer);
-  const array = new Uint8Array(hasher.digest());
-  return new BitArray(array);
-}
-
 export function hashInit(algorithm) {
   return crypto.createHash(algorithmName(algorithm));
 }
 
-export function hashUpdate(state, data) {
-  state.update(data.buffer);
-  return state;
+export function hashUpdate(hasher, hashChunk) {
+  hasher.update(hashChunk.buffer);
+  return hasher;
 }
 
-export function hashFinal(state) {
-  const array = new Uint8Array(state.digest());
+export function digest(hasher) {
+  const array = new Uint8Array(hasher.digest());
   return new BitArray(array);
 }

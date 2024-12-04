@@ -1,6 +1,6 @@
 import { BitArray } from "./gleam.mjs";
 import { Sha1, Sha224, Sha256, Sha384, Sha512, Md5 } from "./gleam/crypto.mjs";
-import * as crypto from "node:crypto";
+import * as crypto from "crypto";
 
 function webCrypto() {
   if (!globalThis.crypto?.getRandomValues) {

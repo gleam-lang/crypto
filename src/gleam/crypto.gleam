@@ -164,12 +164,12 @@ pub fn verify_signed_message(
   message: String,
   secret: BitArray,
 ) -> Result(BitArray, Nil) {
-  use #(protected, payload, signature) <- result.then(case
-    string.split(message, on: ".")
-  {
-    [a, b, c] -> Ok(#(a, b, c))
-    _ -> Error(Nil)
-  })
+  use #(protected, payload, signature) <- result.then(
+    case string.split(message, on: ".") {
+      [a, b, c] -> Ok(#(a, b, c))
+      _ -> Error(Nil)
+    },
+  )
   let text = string.concat([protected, ".", payload])
   use payload <- result.then(bit_array.base64_url_decode(payload))
   use signature <- result.then(bit_array.base64_url_decode(signature))

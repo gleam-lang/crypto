@@ -34,8 +34,8 @@ export function strongRandomBytes(n) {
 }
 
 export function hmac(data, algorithm, key) {
-  const hmac = crypto.createHmac(algorithmName(algorithm), key.buffer);
-  hmac.update(data.buffer);
+  const hmac = crypto.createHmac(algorithmName(algorithm), key.rawBuffer);
+  hmac.update(data.rawBuffer);
   const array = new Uint8Array(hmac.digest());
   return new BitArray(array);
 }
@@ -45,7 +45,7 @@ export function hashInit(algorithm) {
 }
 
 export function hashUpdate(hasher, hashChunk) {
-  hasher.update(hashChunk.buffer);
+  hasher.update(hashChunk.rawBuffer);
   return hasher;
 }
 

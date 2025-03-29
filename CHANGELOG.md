@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.0 - 2025-03-29
+
+- Updated for Gleam v1.9.0.
+
 ## v1.4.0 - 2024-09-30
 
 - Add support for streaming hash digest calculation.

@@ -1,6 +1,11 @@
 import { BitArray } from "./gleam.mjs";
 import { Sha1, Sha224, Sha256, Sha384, Sha512, Md5 } from "./gleam/crypto.mjs";
-import * as crypto from "node:crypto";
+
+let crypto;
+
+if (typeof window === "undefined") {
+  crypto = await import("node:crypto");
+}
 
 function webCrypto() {
   if (!globalThis.crypto?.getRandomValues) {
@@ -34,6 +39,9 @@ export function strongRandomBytes(n) {
 }
 
 export function hmac(data, algorithm, key) {
+  if (!crypto) {
+    throw new Error("Node.js crypto module not available in this environment");
+  }
   const hmac = crypto.createHmac(algorithmName(algorithm), key.rawBuffer);
   hmac.update(data.rawBuffer);
   const array = new Uint8Array(hmac.digest());
@@ -41,6 +49,9 @@ export function hmac(data, algorithm, key) {
 }
 
 export function hashInit(algorithm) {
+  if (!crypto) {
+    throw new Error("Node.js crypto module not available in this environment");
+  }
   return crypto.createHash(algorithmName(algorithm));
 }
 

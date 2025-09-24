@@ -6,6 +6,9 @@
 
 A Gleam cryptography library supporting Erlang and JavaScript.
 
+On JavaScript this package uses Node crypto APIs that are available in server
+runtimes such as NodeJS, Bun, and Deno, but are not available in web browsers.
+
 ## Installation
 
 ```

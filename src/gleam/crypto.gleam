@@ -195,3 +195,11 @@ pub fn verify_signed_message(
     False -> Error(Nil)
   }
 }
+
+/// Key encoding formats for import and export.
+pub type KeyFormat {
+  /// PEM format - Base64 encoded with header/footer lines.
+  Pem
+  /// DER format - Raw binary ASN.1 encoding.
+  Der
+}

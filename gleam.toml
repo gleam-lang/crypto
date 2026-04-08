@@ -1,5 +1,5 @@
 name = "gleam_crypto"
-version = "1.5.1"
+version = "1.5.2"
 gleam = ">= 1.9.0"
 
 licences = ["Apache-2.0"]
@@ -11,8 +11,11 @@ links = [
   { title = "Sponsor", href = "https://github.com/sponsors/lpil" },
 ]
 
+[erlang]
+extra_applications = ["crypto"]
+
 [dependencies]
-gleam_stdlib = "~> 0.32"
+gleam_stdlib = ">= 0.71.0 and < 1.0.0"
 
 [dev-dependencies]
-gleeunit = "~> 1.0"
+gleeunit = ">= 1.9.0 and < 2.0.0"

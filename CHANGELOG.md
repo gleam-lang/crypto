@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.2 - 2026-04-08
+
+- The Erlang `crypto` application added as a runtime dependency.
+
 ## v1.5.1 - 2025-07-01
 
 - Updated for latest `gleam_stdlib`.

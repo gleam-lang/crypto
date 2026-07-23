@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Updated `crypto.secure_compare` to use the native implementation for both targets.
+
 ## v1.6.0 - 2026-04-18
 
 - Updated for `gleam_stdlib` v1.0.0.

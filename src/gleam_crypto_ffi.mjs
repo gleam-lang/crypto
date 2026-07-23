@@ -53,3 +53,11 @@ export function digest(hasher) {
   const array = new Uint8Array(hasher.digest());
   return new BitArray(array);
 }
+
+export function secureCompare(left, right) {
+  try {
+    return crypto.timingSafeEqual(left.rawBuffer, right.rawBuffer);
+  } catch {
+    return false;
+  }
+}

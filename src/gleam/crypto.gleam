@@ -1,7 +1,6 @@
 //// Set of cryptographic functions.
 
 import gleam/bit_array
-import gleam/int
 import gleam/result
 import gleam/string
 
@@ -103,23 +102,9 @@ pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) -> BitArray
 ///
 /// For more details see: http://codahale.com/a-lesson-in-timing-attacks/
 ///
-pub fn secure_compare(left: BitArray, right: BitArray) -> Bool {
-  case bit_array.byte_size(left) == bit_array.byte_size(right) {
-    True -> do_secure_compare(left, right, 0)
-    False -> False
-  }
-}
-
-fn do_secure_compare(left: BitArray, right: BitArray, accumulator: Int) -> Bool {
-  case left, right {
-    <<x, left:bytes>>, <<y, right:bytes>> -> {
-      let accumulator =
-        int.bitwise_or(accumulator, int.bitwise_exclusive_or(x, y))
-      do_secure_compare(left, right, accumulator)
-    }
-    _, _ -> left == right && accumulator == 0
-  }
-}
+@external(erlang, "gleam_crypto_ffi", "secure_compare")
+@external(javascript, "../gleam_crypto_ffi.mjs", "secureCompare")
+pub fn secure_compare(left: BitArray, right: BitArray) -> Bool
 
 // Based off of https://github.com/elixir-plug/plug_crypto/blob/v1.2.1/lib/plug/crypto/message_verifier.ex#L1
 //

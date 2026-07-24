@@ -98,9 +98,15 @@ pub fn digest(hasher: Hasher) -> BitArray
 @external(javascript, "../gleam_crypto_ffi.mjs", "hmac")
 pub fn hmac(data: BitArray, algorithm: HashAlgorithm, key: BitArray) -> BitArray
 
-/// Compares the two binaries in constant-time to avoid timing attacks.
+/// Compares two bit arrays in constant time. A naive equality check returns
+/// as soon as it hits the first differing byte, so an attacker can measure the
+/// response time to recover a secret byte by byte. This comparison always
+/// examines every byte, so the timing gives nothing away. Use it whenever you
+/// check a MAC, token, or other secret.
 ///
-/// For more details see: http://codahale.com/a-lesson-in-timing-attacks/
+/// Returns `False` when the two inputs have different lengths.
+///
+/// For more background see <https://en.wikipedia.org/wiki/Timing_attack>.
 ///
 @external(erlang, "gleam_crypto_ffi", "secure_compare")
 @external(javascript, "../gleam_crypto_ffi.mjs", "secureCompare")

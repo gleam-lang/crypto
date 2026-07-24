@@ -1,16 +1,21 @@
 # crypto
 
-<a href="https://github.com/gleam-lang/crypto/releases"><img src="https://img.shields.io/github/release/gleam-lang/crypto" alt="GitHub release"></a>
-<a href="https://discord.gg/Fm8Pwmy"><img src="https://img.shields.io/discord/768594524158427167?color=blue" alt="Discord chat"></a>
-![CI](https://github.com/gleam-lang/crypto/workflows/test/badge.svg?branch=main)
+A Gleam cryptography library supporting Erlang and JavaScript
 
-A Gleam cryptography library supporting Erlang and JavaScript.
+[![Package Version](https://img.shields.io/hexpm/v/gleam_crypto)](https://hex.pm/packages/gleam_crypto)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://gleam-crypto.hexdocs.pm/)
 
-On JavaScript this package uses Node crypto APIs that are available in server
-runtimes such as NodeJS, Bun, and Deno, but are not available in web browsers.
-
-## Installation
-
-```
+```sh
 gleam add gleam_crypto@1
 ```
+```gleam
+import gleam/crypto
+
+pub fn main() {
+  let hash1 = crypto.hash(crypto.Sha512, <<"Hello, Joe!">>)
+  let hash2 = crypto.hash(crypto.Sha512, <<"Hello, Mike!">>)
+  assert !crypto.secure_compare(hash1, hash2)
+}
+```
+
+Further documentation can be found at <https://gleam-crypto.hexdocs.pm/>.
